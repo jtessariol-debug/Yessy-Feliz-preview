@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Yessy Feliz | Alta Repostería Artesanal</title>
+    <meta name="description" content="Pastelería artesanal de alta gama. Pasteles personalizados, lasañas y picaderas gourmet hechos con amor y los mejores ingredientes." />
+    
+    <!-- Brand Favicon -->
+    <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/WpGJVCGr/Logo.jpg">
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Lato', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+            },
+            colors: {
+              primary: {
+                50: '#FDF2F8',
+                100: '#FCE7F3',
+                200: '#FBCFE8',
+                300: '#F9A8D4',
+                400: '#F472B6',
+                500: '#EC4899',
+                800: '#9D174D',
+                900: '#831843',
+              },
+              cream: {
+                50: '#FFFCF9',
+                100: '#FEF5E7',
+                200: '#F8EAD6',
+              },
+              gold: {
+                400: '#D4AF37',
+                500: '#C5A028',
+                600: '#A38320',
+              },
+              stone: {
+                850: '#2D2428',
+              }
+            },
+            backgroundImage: {
+              'premium-gradient': 'linear-gradient(to right bottom, #FFFCF9, #FFF0F5)',
+            },
+            boxShadow: {
+              'soft': '0 10px 40px -10px rgba(0,0,0,0.05)',
+              'card': '0 4px 20px -2px rgba(236, 72, 153, 0.1)',
+            }
+          }
+        }
+      }
+    </script>
+    
+    <!-- Custom CSS -->
+    <style>
+      body { background-color: #FFFCF9; }
+      html { scroll-behavior: smooth; }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #FBCFE8; border-radius: 20px; }
+      ::-webkit-scrollbar-thumb:hover { background: #EC4899; }
+      .text-balance { text-wrap: balance; }
+    </style>
+
+    <!-- Dependencies via Import Map - FIXED: Removed mixed versions and added deps to ensure Singleton React -->
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "framer-motion": "https://esm.sh/framer-motion@10.16.4?deps=react@18.2.0,react-dom@18.2.0",
+    "lucide-react": "https://esm.sh/lucide-react@0.292.0?deps=react@18.2.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+    
+    <!-- Babel Standalone for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Main Application Logic -->
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { motion, AnimatePresence } from 'framer-motion';
+        import { 
+            ShoppingBag, X, MessageCircle, Star, Check, Menu as MenuIcon, 
+            ChevronRight, Clock, Heart, Sparkles, Award, MapPin, Instagram 
+        } from 'lucide-react';
+
+        // --- Constants & Data ---
+        const PHONE_NUMBER = "18299821162";
+
+        const PRODUCTS = [
+            {
+                id: 1,
+                name: "Lasaña Artesanal Suprema",
+                category: "Salado",
+                description: "Nuestra firma. Capas de pasta fresca, salsa boloñesa de cocción lenta (6 horas) y una mezcla secreta de quesos premium.",
+                image: "https://i.postimg.cc/ydB33TBg/lasagna.jpg",
+                isNew: true
+            },
+            {
+                id: 2,
+                name: "Pasteles de Autor",
+                category: "Celebración",
+                description: "Diseños exclusivos que cuentan tu historia. Acabados impecables en buttercream suizo o fondant.",
+                image: "https://i.postimg.cc/CLW1f4H6/Spiderman-cake.jpg"
+            },
+            {
+                id: 3,
+                name: "Tarta Doble Chocolate",
+                category: "Dulce",
+                description: "Para los amantes del cacao real. Bizcocho húmedo trufado con ganache de chocolate belga al 70%.",
+                image: "https://i.postimg.cc/VN4m49nk/bizcocho-chocolate.jpg"
+            },
+            {
+                id: 4,
+                name: "Bandeja Gourmet Eventos",
+                category: "Salado",
+                description: "La solución elegante para tus reuniones. Una selección curada de bocadillos finos salados.",
+                image: "https://i.postimg.cc/VNsdYkFr/picaderas.jpg"
+            },
+            {
+                id: 5,
+                name: "Flan Napolitano de Oro",
+                category: "Clásicos",
+                description: "Textura imposiblemente cremosa. Bañado en caramelo ámbar hecho en casa.",
+                image: "https://i.postimg.cc/Qt28W8cq/flan.jpg"
+            },
+            {
+                id: 6,
+                name: "Budín Especiado",
+                category: "Hora del Té",
+                description: "Macerado en licores finos, con frutas selectas y un toque cálido de canela y nuez moscada.",
+                image: "https://i.postimg.cc/QxbDjkYp/budin.jpg"
+            }
+        ];
+
+        // --- Components ---
+
+        const Button = ({ 
+            children, variant = 'primary', className = '', onClick, icon, disabled
+        }) => {
+            const baseStyles = "inline-flex items-center justify-center px-8 py-4 rounded-full font-medium transition-all duration-300 transform active:scale-[0.98] text-sm tracking-wide disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none";
+            
+            const variants = {
+                primary: "bg-stone-850 text-white hover:bg-stone-700 shadow-lg shadow-stone-900/10",
+                outline: "border border-stone-300 text-stone-600 hover:border-primary-400 hover:text-primary-600 bg-transparent",
+                white: "bg-white text-stone-850 shadow-xl shadow-stone-900/5 hover:bg-cream-50",
+                whatsapp: "bg-[#25D366] text-white shadow-lg shadow-green-400/20 hover:bg-[#20bd5a]",
+            };
+
+            return (
+                <button onClick={onClick} disabled={disabled} className={`${baseStyles} ${variants[variant]} ${className}`}>
+                    {icon && <span className="mr-2">{icon}</span>}
+                    {children}
+                </button>
+            );
+        };
+
+        const SectionHeading = ({ subtitle, title, align = 'center', light = false }) => {
+            return (
+                <div className={`mb-16 ${align === 'center' ? 'text-center' : 'text-left'}`}>
+                    <motion.span 
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className={`uppercase tracking-[0.2em] text-xs font-bold mb-4 block ${light ? 'text-primary-100' : 'text-primary-600'}`}
+                    >
+                        {subtitle}
+                    </motion.span>
+                    <motion.h2 
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        viewport={{ once: true }}
+                        className={`font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-tight text-balance ${light ? 'text-white' : 'text-stone-850'}`}
+                    >
+                        {title}
+                    </motion.h2>
+                    <motion.div 
+                        initial={{ scaleX: 0 }}
+                        whileInView={{ scaleX: 1 }}
+                        transition={{ delay: 0.2, duration: 0.8 }}
+                        viewport={{ once: true }}
+                        className={`h-[1px] w-20 bg-gold-400 mt-6 ${align === 'center' ? 'mx-auto' : ''} ${light ? 'opacity-50' : ''}`}
+                    />
+                </div>
+            );
+        };
+
+        // --- Main App Component ---
+
+        const App = () => {
+            const [cart, setCart] = useState([]);
+            const [isCartOpen, setIsCartOpen] = useState(false);
+            const [isScrolled, setIsScrolled] = useState(false);
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setIsScrolled(window.scrollY > 50);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const addToCart = (product) => {
+                setCart([...cart, product]);
+                setIsCartOpen(true);
+            };
+
+            const removeFromCart = (index) => {
+                const newCart = [...cart];
+                newCart.splice(index, 1);
+                setCart(newCart);
+            };
+
+            const handleCheckout = () => {
+                const itemsList = cart.map(p => `• ${p.name}`).join("%0A");
+                const waText = `¡Hola Yessy Feliz! 🍰%0A%0AHe estado viendo su web y me encantaría cotizar estos productos para una ocasión especial:%0A%0A${itemsList}%0A%0A¿Me podrían confirmar disponibilidad y precio? ¡Gracias!`;
+                window.open(`https://wa.me/${PHONE_NUMBER}?text=${waText}`, '_blank');
+            };
+
+            const scrollToTop = () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            return (
+                <div className="min-h-screen bg-cream-50 overflow-x-hidden selection:bg-primary-200 selection:text-primary-900 font-sans">
+                    
+                    {/* --- Navbar --- */}
+                    <nav 
+                        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+                            isScrolled 
+                                ? 'bg-white/80 backdrop-blur-xl py-3 shadow-soft border-b border-primary-50' 
+                                : 'bg-transparent py-6'
+                        }`}
+                    >
+                        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+                            <div onClick={scrollToTop} className="flex items-center gap-3 group cursor-pointer">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-gold-400 rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                                    <img 
+                                        src="https://i.postimg.cc/WpGJVCGr/Logo.jpg" 
+                                        alt="Yessy Feliz Logo" 
+                                        className="relative h-12 w-12 md:h-14 md:w-14 rounded-full object-cover ring-2 ring-white shadow-md transition-transform duration-300 group-hover:scale-105" 
+                                    />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className={`font-serif text-xl md:text-2xl font-bold tracking-tight leading-none ${isScrolled ? 'text-stone-850' : 'text-stone-850'}`}>
+                                        Yessy Feliz
+                                    </span>
+                                    <span className="text-[10px] uppercase tracking-[0.25em] text-primary-500 font-bold mt-1">
+                                        Pastelería de Autor
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Desktop Menu */}
+                            <div className="hidden md:flex items-center gap-10">
+                                {['Colección', 'Nosotros', 'Contacto'].map((item) => (
+                                    <a 
+                                        key={item}
+                                        href={`#${item.toLowerCase().replace('ó', 'o')}`} 
+                                        className="text-sm font-medium uppercase tracking-widest text-stone-500 hover:text-primary-600 transition-colors relative group py-2"
+                                    >
+                                        {item}
+                                        <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-primary-400 transition-all duration-300 group-hover:w-full"></span>
+                                    </a>
+                                ))}
+                                <button 
+                                    onClick={() => setIsCartOpen(true)}
+                                    className="relative p-3 hover:bg-primary-50 rounded-full transition-all duration-300 group"
+                                >
+                                    <ShoppingBag className="w-5 h-5 text-stone-700 group-hover:text-primary-600" />
+                                    {cart.length > 0 && (
+                                        <span className="absolute top-1 right-1 h-4 w-4 bg-primary-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full shadow-sm animate-in zoom-in">
+                                            {cart.length}
+                                        </span>
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* Mobile Toggle */}
+                            <div className="md:hidden flex items-center gap-4">
+                                <button onClick={() => setIsCartOpen(true)} className="relative p-2">
+                                    <ShoppingBag className="w-6 h-6 text-stone-700" />
+                                    {cart.length > 0 && (
+                                        <span className="absolute top-0 right-0 h-4 w-4 bg-primary-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full">
+                                            {cart.length}
+                                        </span>
+                                    )}
+                                </button>
+                                <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                                    <MenuIcon className="w-7 h-7 text-stone-800" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Mobile Menu */}
+                        <AnimatePresence>
+                            {mobileMenuOpen && (
+                                <motion.div 
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="md:hidden bg-white border-b border-stone-100 overflow-hidden"
+                                >
+                                    <div className="flex flex-col p-8 gap-6 text-center">
+                                        {['Colección', 'Nosotros', 'Contacto'].map((item) => (
+                                            <a 
+                                                key={item}
+                                                href={`#${item.toLowerCase().replace('ó', 'o')}`}
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="text-stone-850 font-serif text-2xl hover:text-primary-500 transition-colors"
+                                            >
+                                                {item}
+                                            </a>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </nav>
+
+                    {/* --- Hero Section --- */}
+                    <header className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 min-h-[90vh] flex items-center justify-center overflow-hidden">
+                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-100/40 rounded-full blur-[120px] -z-10 mix-blend-multiply animate-pulse" />
+                        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cream-200/50 rounded-full blur-[100px] -z-10 mix-blend-multiply" />
+                        
+                        <div className="max-w-5xl mx-auto text-center relative z-10">
+                            <motion.div 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6 }}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary-100 text-primary-800 text-xs font-bold tracking-widest uppercase mb-8 shadow-sm"
+                            >
+                                <Star className="w-3 h-3 text-gold-500 fill-gold-500" />
+                                Excelencia Artesanal
+                            </motion.div>
+                            
+                            <motion.h1 
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.1 }}
+                                className="font-serif text-5xl md:text-7xl lg:text-8xl text-stone-850 leading-[1.1] mb-8 tracking-tight"
+                            >
+                                Creamos momentos <br/>
+                                <span className="italic text-primary-500 relative inline-block">
+                                    inolvidables
+                                    <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                        <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
+                                    </svg>
+                                </span>
+                            </motion.h1>
+
+                            <motion.p 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.2 }}
+                                className="text-lg md:text-xl text-stone-500 font-light max-w-2xl mx-auto mb-12 leading-relaxed"
+                            >
+                                Pastelería de alta gama hecha bajo pedido. Ingredientes puros, 
+                                técnicas tradicionales y un diseño que enamora a primera vista.
+                            </motion.p>
+
+                            <motion.div 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.3 }}
+                                className="flex flex-col sm:flex-row items-center justify-center gap-5"
+                            >
+                                <Button 
+                                    variant="whatsapp" 
+                                    icon={<MessageCircle className="w-5 h-5" />}
+                                    onClick={() => window.open(`https://wa.me/${PHONE_NUMBER}`, '_blank')}
+                                    className="w-full sm:w-auto text-lg px-10 py-4 shadow-xl hover:shadow-2xl hover:-translate-y-1"
+                                >
+                                    Hacer Pedido
+                                </Button>
+                                <Button 
+                                    variant="outline" 
+                                    onClick={() => document.getElementById('coleccion')?.scrollIntoView({ behavior: 'smooth' })}
+                                    className="w-full sm:w-auto"
+                                >
+                                    Explorar Menú
+                                </Button>
+                            </motion.div>
+
+                            {/* Trust Badges */}
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 1, delay: 0.6 }}
+                                className="mt-20 pt-10 border-t border-stone-200/50 flex flex-wrap justify-center gap-8 md:gap-16"
+                            >
+                                {[
+                                    { text: 'Ingredientes Premium', icon: <Award className="w-5 h-5 text-gold-500" /> },
+                                    { text: 'Calidad-Precio', icon: <Sparkles className="w-5 h-5 text-gold-500" /> },
+                                    { text: 'Atención Personalizada', icon: <Heart className="w-5 h-5 text-gold-500" /> }
+                                ].map((badge, i) => (
+                                    <div key={i} className="flex items-center gap-3 text-stone-600 font-medium text-sm">
+                                        {badge.icon}
+                                        <span>{badge.text}</span>
+                                    </div>
+                                ))}
+                            </motion.div>
+                        </div>
+                    </header>
+
+                    {/* --- Value Proposition (Why Us) --- */}
+                    <section id="nosotros" className="py-24 bg-white relative">
+                        <div className="max-w-7xl mx-auto px-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                                <motion.div 
+                                    initial={{ opacity: 0, x: -50 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    className="relative"
+                                >
+                                    <div className="absolute inset-0 bg-primary-200 rounded-[2rem] transform rotate-3 scale-95 translate-y-4"></div>
+                                    <img 
+                                        src="https://images.unsplash.com/photo-1516054575922-f0b8eeadec1a?q=80&w=1000&auto=format&fit=crop" 
+                                        alt="Chef decorando pastel" 
+                                        className="relative rounded-[2rem] shadow-2xl object-cover h-[600px] w-full"
+                                    />
+                                    <div className="absolute -bottom-8 -right-8 bg-white p-6 rounded-2xl shadow-xl max-w-xs hidden md:block border border-primary-50">
+                                        <p className="font-serif text-xl italic text-stone-800">"El secreto no es solo la receta, es el amor con el que se hornea."</p>
+                                    </div>
+                                </motion.div>
+                                
+                                <div>
+                                    <SectionHeading align="left" subtitle="Nuestra Filosofía" title="Más que un postre, una experiencia" />
+                                    <div className="space-y-8">
+                                        {[
+                                            { title: "Frescura Garantizada", desc: "No trabajamos con stock congelado. Tu pedido se hornea exclusivamente para ti horas antes de la entrega." },
+                                            { title: "Diseño de Vanguardia", desc: "Nos especializamos en tendencias modernas: Buttercream, texturas orgánicas y minimalismo elegante." },
+                                            { title: "Calidad Intransigente", desc: "Usamos mantequilla real, chocolate belga y frutas de estación. Se nota en cada bocado." }
+                                        ].map((item, idx) => (
+                                            <motion.div 
+                                                key={idx}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                whileInView={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: idx * 0.2 }}
+                                                viewport={{ once: true }}
+                                                className="flex gap-4 group"
+                                            >
+                                                <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center text-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-colors duration-300 shrink-0">
+                                                    <Check className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-serif text-xl font-bold text-stone-800 mb-2">{item.title}</h3>
+                                                    <p className="text-stone-500 leading-relaxed font-light">{item.desc}</p>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-12">
+                                        <Button variant="outline" onClick={() => window.open(`https://wa.me/${PHONE_NUMBER}`, '_blank')}>
+                                            Consultar Disponibilidad
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* --- Catalog Section --- */}
+                    <section id="coleccion" className="py-24 max-w-7xl mx-auto px-6">
+                        <SectionHeading subtitle="El Menú" title="Nuestras Obras Maestras" />
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-12 gap-x-8">
+                            {PRODUCTS.map((product, idx) => (
+                                <motion.div
+                                    key={product.id}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.1 }}
+                                    viewport={{ once: true }}
+                                    className="group flex flex-col h-full bg-white rounded-3xl overflow-hidden shadow-soft hover:shadow-card border border-stone-50 transition-all duration-500 hover:-translate-y-2"
+                                >
+                                    <div className="relative aspect-[4/5] overflow-hidden">
+                                        <img 
+                                            src={product.image} 
+                                            alt={product.name} 
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        
+                                        {product.isNew && (
+                                            <span className="absolute top-4 left-4 bg-white text-stone-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest z-10">
+                                                Nuevo
+                                            </span>
+                                        )}
+
+                                        <button 
+                                            onClick={() => addToCart(product)}
+                                            className="absolute bottom-6 right-6 bg-white text-stone-900 w-12 h-12 rounded-full flex items-center justify-center shadow-lg translate-y-20 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100 hover:bg-primary-500 hover:text-white"
+                                            aria-label="Agregar"
+                                        >
+                                            <ShoppingBag className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="p-8 flex flex-col flex-grow">
+                                        <span className="text-primary-500 text-xs font-bold uppercase tracking-widest mb-2">{product.category}</span>
+                                        <h3 className="font-serif text-2xl font-medium text-stone-850 mb-3 group-hover:text-primary-600 transition-colors">
+                                            {product.name}
+                                        </h3>
+                                        <p className="text-stone-500 font-light text-sm leading-relaxed mb-6 line-clamp-3 flex-grow">
+                                            {product.description}
+                                        </p>
+                                        <button 
+                                            onClick={() => addToCart(product)}
+                                            className="w-full py-3 border-t border-stone-100 text-stone-600 font-medium text-sm uppercase tracking-wider hover:text-primary-600 hover:bg-stone-50 transition-colors flex items-center justify-center gap-2 group/btn"
+                                        >
+                                            Agregar a mi lista <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* --- CTA / Emotional Banner --- */}
+                    <section className="py-24 bg-stone-850 relative overflow-hidden px-6">
+                        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-600 rounded-full blur-[150px] opacity-20 pointer-events-none"></div>
+                        
+                        <div className="max-w-4xl mx-auto text-center relative z-10">
+                            <Sparkles className="w-12 h-12 text-gold-400 mx-auto mb-8 animate-pulse" />
+                            <h2 className="font-serif text-4xl md:text-6xl text-white mb-8 leading-tight">
+                                ¿Tienes una celebración en mente?
+                            </h2>
+                            <p className="text-stone-300 text-lg md:text-xl font-light mb-12 max-w-2xl mx-auto">
+                                Diseñamos mesas de postres personalizadas para bodas, cumpleaños y eventos corporativos. Déjanos ser parte de tu historia.
+                            </p>
+                            <div className="flex flex-col sm:flex-row justify-center gap-4">
+                                <Button variant="white" onClick={() => window.open(`https://wa.me/${PHONE_NUMBER}?text=Hola, quiero cotizar un evento grande`, '_blank')}>
+                                    Cotizar Evento
+                                </Button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* --- Footer --- */}
+                    <footer id="contacto" className="bg-white pt-24 pb-12 border-t border-stone-100">
+                        <div className="max-w-7xl mx-auto px-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left mb-16">
+                                <div className="flex flex-col items-center md:items-start">
+                                    <img src="https://i.postimg.cc/WpGJVCGr/Logo.jpg" alt="Logo" className="h-16 w-16 rounded-full mb-6 grayscale hover:grayscale-0 transition-all" />
+                                    <p className="text-stone-500 font-light text-sm max-w-xs">
+                                        Repostería artesanal donde el sabor y la estética se encuentran. Santo Domingo Este.
+                                    </p>
+                                </div>
+                                
+                                <div className="flex flex-col items-center md:items-start gap-4">
+                                    <h4 className="font-serif text-lg font-bold text-stone-800">Contacto</h4>
+                                    <a href={`https://wa.me/${PHONE_NUMBER}`} className="flex items-center gap-3 text-stone-500 hover:text-primary-600 transition-colors">
+                                        <MessageCircle className="w-5 h-5" /> {PHONE_NUMBER}
+                                    </a>
+                                    <a href="https://www.instagram.com/yessifelizpasteleria" className="flex items-center gap-3 text-stone-500 hover:text-primary-600 transition-colors">
+                                        <Instagram className="w-5 h-5" /> @yessifelizpasteleria
+                                    </a>
+                                </div>
+
+                                <div className="flex flex-col items-center md:items-start gap-4">
+                                    <h4 className="font-serif text-lg font-bold text-stone-800">Ubicación</h4>
+                                    <div className="flex items-start gap-3 text-stone-500 text-sm">
+                                        <MapPin className="w-5 h-5 shrink-0" />
+                                        <span>Calle Isabel De Torres #26<br/>Altos de Cancino<br/>Santo Domingo Este</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="border-t border-stone-100 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-stone-400 font-light">
+                                <p>&copy; 2025 Yessy Feliz Pastelería. Todos los derechos reservados.</p>
+                                <div className="flex gap-4 mt-4 md:mt-0">
+                                    <span>Aviso Legal</span>
+                                    <span>Política de Privacidad</span>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+
+                    {/* --- Shopping Cart Drawer --- */}
+                    <AnimatePresence>
+                        {isCartOpen && (
+                            <>
+                                <motion.div 
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    onClick={() => setIsCartOpen(false)}
+                                    className="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-[60]"
+                                />
+                                <motion.div 
+                                    initial={{ x: '100%' }}
+                                    animate={{ x: 0 }}
+                                    exit={{ x: '100%' }}
+                                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                                    className="fixed top-0 right-0 h-full w-full md:w-[500px] bg-white z-[70] shadow-2xl flex flex-col"
+                                >
+                                    <div className="p-8 border-b border-stone-100 flex items-center justify-between bg-white">
+                                        <div>
+                                            <h2 className="font-serif text-2xl font-bold text-stone-800">Tu Lista de Deseos</h2>
+                                            <p className="text-xs text-stone-500 mt-1">Cotización previa al pedido</p>
+                                        </div>
+                                        <button onClick={() => setIsCartOpen(false)} className="p-2 hover:bg-stone-50 rounded-full transition-colors">
+                                            <X className="w-6 h-6 text-stone-400" />
+                                        </button>
+                                    </div>
+
+                                    <div className="flex-1 overflow-y-auto p-8 space-y-6">
+                                        {cart.length === 0 ? (
+                                            <div className="h-full flex flex-col items-center justify-center text-center space-y-6 opacity-60">
+                                                <div className="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center">
+                                                    <ShoppingBag className="w-8 h-8 text-stone-300" />
+                                                </div>
+                                                <p className="text-stone-500 font-serif text-lg">Tu bandeja está vacía.</p>
+                                                <Button variant="outline" onClick={() => setIsCartOpen(false)}>Explorar Delicias</Button>
+                                            </div>
+                                        ) : (
+                                            cart.map((item, index) => (
+                                                <motion.div 
+                                                    layout
+                                                    initial={{ opacity: 0, x: 20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    key={`${item.id}-${index}`}
+                                                    className="flex gap-4 p-4 rounded-2xl bg-stone-50 border border-stone-100 group hover:border-primary-100 transition-colors"
+                                                >
+                                                    <img src={item.image} alt={item.name} className="w-24 h-24 rounded-xl object-cover shadow-sm" />
+                                                    <div className="flex-1 flex flex-col justify-between py-1">
+                                                        <div>
+                                                            <h4 className="font-serif font-bold text-stone-800 leading-tight">{item.name}</h4>
+                                                            <span className="text-xs text-stone-500">{item.category}</span>
+                                                        </div>
+                                                        <button 
+                                                            onClick={() => removeFromCart(index)}
+                                                            className="text-left text-xs text-red-400 hover:text-red-600 font-medium tracking-wide uppercase"
+                                                        >
+                                                            Remover
+                                                        </button>
+                                                    </div>
+                                                </motion.div>
+                                            ))
+                                        )}
+                                    </div>
+
+                                    <div className="p-8 bg-stone-50 border-t border-stone-100">
+                                        <div className="mb-6">
+                                            <h4 className="font-serif text-lg text-stone-800 mb-2">Resumen</h4>
+                                            <div className="flex justify-between text-sm text-stone-600">
+                                                <span>Total de artículos</span>
+                                                <span className="font-bold">{cart.length}</span>
+                                            </div>
+                                        </div>
+                                        <Button 
+                                            variant="whatsapp" 
+                                            className="w-full justify-center text-lg gap-2"
+                                            disabled={cart.length === 0}
+                                            onClick={handleCheckout}
+                                            icon={<MessageCircle className="w-5 h-5" />}
+                                        >
+                                            Cotizar por WhatsApp
+                                        </Button>
+                                        <p className="text-center text-[10px] text-stone-400 mt-4 max-w-xs mx-auto">
+                                            Al hacer clic, se abrirá WhatsApp con el detalle de tu lista para confirmar disponibilidad y precios finales.
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            </>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Floating Action Button (Mobile) */}
+                    <AnimatePresence>
+                        {!isCartOpen && cart.length > 0 && (
+                            <motion.button
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                onClick={() => setIsCartOpen(true)}
+                                className="fixed bottom-6 right-6 z-40 bg-stone-850 text-white p-4 rounded-full shadow-2xl shadow-stone-900/30 flex items-center justify-center cursor-pointer border-4 border-white"
+                            >
+                                <ShoppingBag className="w-6 h-6" />
+                                <span className="absolute -top-1 -right-1 bg-primary-500 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center border-2 border-white">
+                                    {cart.length}
+                                </span>
+                            </motion.button>
+                        )}
+                    </AnimatePresence>
+
+                </div>
+            );
+        };
+
+        const rootElement = document.getElementById('root');
+        if (!rootElement) {
+            throw new Error("Could not find root element to mount to");
+        }
+
+        const root = createRoot(rootElement);
+        root.render(
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
+        );
+    </script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
